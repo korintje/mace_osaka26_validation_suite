@@ -48,7 +48,17 @@ for filename in ("in.relax", "in.md_300K"):
     text = path.read_text()
     if text.count(plain_style) != 1 or text.count(plain_coeff) != 1:
         raise RuntimeError(f"Unexpected Test 09 pair definition in {path}")
-    path.write_text(text.replace(plain_style, d3_style).replace(plain_coeff, d3_coeff))
+    neighbor_settings = "neigh_modify every 1 delay 0 check yes"
+    d3_neighbor_settings = (
+        "neigh_modify every 1 delay 0 check yes one 20000 page 200000"
+    )
+    if text.count(neighbor_settings) != 1:
+        raise RuntimeError(f"Unexpected Test 09 neighbor settings in {path}")
+    path.write_text(
+        text.replace(plain_style, d3_style)
+        .replace(plain_coeff, d3_coeff)
+        .replace(neighbor_settings, d3_neighbor_settings)
+    )
 
 metadata_path = test_dir / "system_metadata.json"
 metadata = json.loads(metadata_path.read_text())
@@ -125,6 +135,7 @@ MACE-Osaka26 + two-body PBE-D3(BJ)
 interaction cutoff = 30.0 A
 coordination cutoff = 20.0 A
 ATM three-body term = disabled
+neighbor capacity = 20000 neighbors/atom, 200000 entries/page
 ```
 
 LAMMPS applies the correction with `pair_style hybrid/overlay`. Test 10 must pass
@@ -132,6 +143,10 @@ before this production-scale test is interpreted. Direct comparison of Test 09
 and Test 11 isolates the effect of the D3 correction on adsorption stability,
 carbonyl tilt, molecular radius of gyration, end-to-end distance, and backbone
 dihedral populations.
+
+The enlarged neighbor-list capacity is required because the 30 A D3 cutoff
+includes many periodic images in the 13 x 21 A in-plane cell. It changes only
+memory allocation, not the neighbor cutoff or physical interactions.
 
 Run with:
 

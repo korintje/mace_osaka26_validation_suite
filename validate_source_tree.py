@@ -38,6 +38,7 @@ actual_entries = {
     if path.is_file()
     and not any(part.startswith(".") for part in path.relative_to(root).parts)
     and "__pycache__" not in path.parts
+    and not (path.name.startswith("slurm-") and path.suffix == ".out")
 }
 if (root / ".gitattributes").is_file():
     actual_entries.add(".gitattributes")

@@ -181,6 +181,7 @@ fi
 
 "$SCRIPT_DIR/generators/generate_09_2nonanone_md_300K.sh" "$WORK_ROOT"
 "$SCRIPT_DIR/generators/generate_10_d3_ase_lammps_consistency.sh" "$WORK_ROOT"
+"$SCRIPT_DIR/generators/generate_11_2nonanone_d3_md_300K.sh" "$WORK_ROOT"
 
 cat > "$WORK_ROOT/README.md" <<EOF
 # Generated calculation directories (model dtype: $DTYPE)
@@ -199,6 +200,7 @@ Execution order:
 8. \`08_water_adsorption_md_300K\`
 9. \`09_2nonanone_md_300K\`
 10. \`10_d3_ase_lammps_consistency\`
+11. \`11_2nonanone_d3_md_300K\`
 
 Each directory contains a README, \`run.sh\`, and \`run.slurm\`.
 EOF

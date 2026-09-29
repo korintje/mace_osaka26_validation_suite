@@ -14,8 +14,9 @@ This package regenerates the pre-calculation directories and files used for vali
 8. `08_water_adsorption_md_300K`: runs 300 K NVT molecular dynamics for the lowest-energy ZnO/H2O adsorption structure and analyzes adsorption stability.
 9. `09_2nonanone_md_300K`: relaxes 2-nonanone on a wider ZnO (10-10) slab, runs 300 K NVT molecular dynamics, and analyzes molecular conformations.
 10. `10_d3_ase_lammps_consistency`: validates PBE-D3(BJ) by comparing D3-only and MACE+D3 energies and forces between ASE/`torch_dftd` and LAMMPS `dispersion/d3`.
+11. `11_2nonanone_d3_md_300K`: repeats Test 09 with the validated two-body PBE-D3(BJ) correction overlaid on MACE for both relaxation and 300 K MD.
 
-Each test directory contains its own input-generation record, README, run script, and `Slurm` script. Tests 01–08 retain their existing system sizes; Test 09 uses a wider 4 x 4 ZnO (10-10) surface to accommodate the extended hydrocarbon chain. Test 10 checks the exact two-body PBE-D3(BJ) overlay intended for adsorbate calculations. Test 08 requires the relaxed structure produced by running Test 07. If it is not available, the generator creates the other tests and prints instructions to rerun the same command after Test 07 completes.
+Each test directory contains its own input-generation record, README, run script, and `Slurm` script. Tests 01–08 retain their existing system sizes; Test 09 uses a wider 4 x 4 ZnO (10-10) surface to accommodate the extended hydrocarbon chain. Test 10 checks the exact two-body PBE-D3(BJ) overlay intended for adsorbate calculations. Test 11 is the controlled D3 counterpart of Test 09: system geometry, relaxation, MD, and analysis settings are identical. Test 08 requires the relaxed structure produced by running Test 07. If it is not available, the generator creates the other tests and prints instructions to rerun the same command after Test 07 completes.
 
 ## D3 environment support
 

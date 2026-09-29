@@ -19,12 +19,18 @@ Each test directory contains its own input-generation record, README, run script
 
 ## D3 environment support
 
-Install and verify the ASE and LAMMPS D3 prerequisites in the existing target
-environment (the script defaults to `/apps/envs/lammps-mace-current`):
+Install and verify the ASE and LAMMPS D3 prerequisites in the shared calculation
+environment:
 
 ```bash
-./environment/install_d3_support.sh
+./environment/install_d3_support.sh --sudo
 ```
+
+The default target is `/apps/envs/lammps-mace-current`, matching every generated
+Slurm script. `--sudo` elevates only the package-installation command; checks run
+as the invoking user. Do not invoke the complete script as `sudo ./...`, because
+sudo commonly removes conda from `PATH`. A different environment can be selected
+with `./environment/install_d3_support.sh [--sudo] /path/to/conda/env`.
 
 This installs the pinned `torch-dftd` dependency without replacing the existing
 PyTorch stack, then checks that the active LAMMPS binary contains the

@@ -6,8 +6,11 @@ import subprocess
 
 root = Path(__file__).resolve().parent
 shell_files = [root / "generate_all_tests.sh", *sorted((root / "generators").glob("*.sh"))]
+shell_files.extend(sorted((root / "environment").glob("*.sh")))
 bash = os.environ.get("BASH", "bash")
 for path in shell_files:
+    if b"\r\n" in path.read_bytes():
+        raise RuntimeError(f"CRLF line endings found in shell script: {path}")
     subprocess.run([bash, "-n", str(path)], check=True)
 
 for path in shell_files:
@@ -30,6 +33,8 @@ actual_entries = {
     and not any(part.startswith(".") for part in path.relative_to(root).parts)
     and "__pycache__" not in path.parts
 }
+if (root / ".gitattributes").is_file():
+    actual_entries.add(".gitattributes")
 if manifest_entries != actual_entries:
     missing = sorted(manifest_entries - actual_entries)
     unlisted = sorted(actual_entries - manifest_entries)

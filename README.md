@@ -32,8 +32,8 @@ as the invoking user. Do not invoke the complete script as `sudo ./...`, because
 sudo commonly removes conda from `PATH`. A different environment can be selected
 with `./environment/install_d3_support.sh [--sudo] /path/to/conda/env`.
 
-This installs the pinned `torch-dftd` dependency without replacing the existing
-PyTorch stack, then checks that the active LAMMPS binary contains the
+This installs pinned `torch-dftd` plus its declared ASE/`pymatgen` dependencies
+(PyTorch is not a `torch-dftd` package dependency), then checks that the active LAMMPS binary contains the
 `dispersion/d3` pair style. If that pair style is absent, LAMMPS must be rebuilt
 with the `EXTRA-PAIR` package before Test 10 or D3-enabled production inputs can
 run.

@@ -47,14 +47,14 @@ done
 
 echo "Target conda environment: $ENV_PREFIX"
 if [[ -w "$ENV_PREFIX/lib" ]]; then
-    "$PYTHON_BIN" -m pip install --no-deps "torch-dftd==0.5.3"
+    "$PYTHON_BIN" -m pip install "torch-dftd==0.5.3"
 elif [[ "$USE_SUDO" -eq 1 ]]; then
     command -v sudo >/dev/null 2>&1 || {
         echo "ERROR: sudo was requested but is not available" >&2
         exit 1
     }
     # Elevate only installation. Validation remains an ordinary-user check.
-    sudo "$PYTHON_BIN" -m pip install --no-deps "torch-dftd==0.5.3"
+    sudo "$PYTHON_BIN" -m pip install "torch-dftd==0.5.3"
 else
     cat >&2 <<EOF
 ERROR: target environment is not writable: $ENV_PREFIX

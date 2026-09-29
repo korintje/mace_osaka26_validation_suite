@@ -28,7 +28,6 @@ cat > generate_system.py <<'PYEOF'
 """Create a compact hydrocarbon dimer with a measurable dispersion energy."""
 from ase import Atoms
 from ase.io import write
-from pathlib import Path
 import numpy as np
 
 # Two methane molecules at a non-equilibrium separation exercise both energy
@@ -106,6 +105,7 @@ LAMMPS_EOF
 
 cat > ase_singlepoint.py <<'PYEOF'
 #!/usr/bin/env python3
+from pathlib import Path
 import numpy as np
 import torch
 from ase.io import read

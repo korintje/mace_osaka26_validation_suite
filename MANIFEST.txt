@@ -1,4 +1,5 @@
 MANIFEST.txt
+.gitattributes
 README.md
 generate_all_tests.sh
 environment/install_d3_support.sh

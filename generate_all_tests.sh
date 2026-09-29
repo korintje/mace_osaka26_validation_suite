@@ -150,7 +150,7 @@ sha256sum "$MLIAP_MODEL" >> "$MODEL_DIR/SHA256SUMS"
 import sys
 import importlib.metadata as metadata
 print(f"Python version: {sys.version.split()[0]}")
-for package in ["torch", "ase", "mace-torch", "cuequivariance", "cuequivariance-torch"]:
+for package in ["torch", "ase", "mace-torch", "torch-dftd", "cuequivariance", "cuequivariance-torch"]:
     try:
         print(f"{package}: {metadata.version(package)}")
     except metadata.PackageNotFoundError:
@@ -180,6 +180,7 @@ else
 fi
 
 "$SCRIPT_DIR/generators/generate_09_2nonanone_md_300K.sh" "$WORK_ROOT"
+"$SCRIPT_DIR/generators/generate_10_d3_ase_lammps_consistency.sh" "$WORK_ROOT"
 
 cat > "$WORK_ROOT/README.md" <<EOF
 # Generated calculation directories (model dtype: $DTYPE)
@@ -197,6 +198,7 @@ Execution order:
 7. \`07_water_adsorption\`
 8. \`08_water_adsorption_md_300K\`
 9. \`09_2nonanone_md_300K\`
+10. \`10_d3_ase_lammps_consistency\`
 
 Each directory contains a README, \`run.sh\`, and \`run.slurm\`.
 EOF

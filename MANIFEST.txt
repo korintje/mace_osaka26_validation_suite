@@ -1,6 +1,7 @@
 MANIFEST.txt
 README.md
 generate_all_tests.sh
+environment/install_d3_support.sh
 generators/generate_01_consistency.sh
 generators/generate_02_fixed_cell_relaxation.sh
 generators/generate_03_full_cell_relaxation.sh
@@ -10,4 +11,5 @@ generators/generate_06_surface_energy_convergence.sh
 generators/generate_07_water_adsorption.sh
 generators/generate_08_water_adsorption_md_300K.sh
 generators/generate_09_2nonanone_md_300K.sh
+generators/generate_10_d3_ase_lammps_consistency.sh
 validate_source_tree.py

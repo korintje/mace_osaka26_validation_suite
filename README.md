@@ -13,8 +13,24 @@ This package regenerates the pre-calculation directories and files used for vali
 7. `07_water_adsorption`: relaxes representative molecular H2O adsorption configurations on ZnO (10-10) and calculates adsorption energies.
 8. `08_water_adsorption_md_300K`: runs 300 K NVT molecular dynamics for the lowest-energy ZnO/H2O adsorption structure and analyzes adsorption stability.
 9. `09_2nonanone_md_300K`: relaxes 2-nonanone on a wider ZnO (10-10) slab, runs 300 K NVT molecular dynamics, and analyzes molecular conformations.
+10. `10_d3_ase_lammps_consistency`: validates PBE-D3(BJ) by comparing D3-only and MACE+D3 energies and forces between ASE/`torch_dftd` and LAMMPS `dispersion/d3`.
 
-Each test directory contains its own input-generation record, README, run script, and `Slurm` script. Tests 01–08 retain their existing system sizes; Test 09 uses a wider 4 x 4 ZnO (10-10) surface to accommodate the extended hydrocarbon chain. Test 08 requires the relaxed structure produced by running Test 07. If it is not available, the generator creates the other tests and prints instructions to rerun the same command after Test 07 completes.
+Each test directory contains its own input-generation record, README, run script, and `Slurm` script. Tests 01–08 retain their existing system sizes; Test 09 uses a wider 4 x 4 ZnO (10-10) surface to accommodate the extended hydrocarbon chain. Test 10 checks the exact two-body PBE-D3(BJ) overlay intended for adsorbate calculations. Test 08 requires the relaxed structure produced by running Test 07. If it is not available, the generator creates the other tests and prints instructions to rerun the same command after Test 07 completes.
+
+## D3 environment support
+
+Install and verify the ASE and LAMMPS D3 prerequisites in the existing target
+environment (the script defaults to `/apps/envs/lammps-mace-current`):
+
+```bash
+./environment/install_d3_support.sh
+```
+
+This installs the pinned `torch-dftd` dependency without replacing the existing
+PyTorch stack, then checks that the active LAMMPS binary contains the
+`dispersion/d3` pair style. If that pair style is absent, LAMMPS must be rebuilt
+with the `EXTRA-PAIR` package before Test 10 or D3-enabled production inputs can
+run.
 
 ## Generate tests
 
@@ -77,6 +93,7 @@ Repeat for the other test directories.
 - Environment: `/apps/envs/lammps-mace-current`
 - Slurm GPU resource: `--gres=gpu:rtx3080:1`
 - LAMMPS executable: `lmp`
+- D3 convention: two-body PBE-D3(BJ), 30 A interaction cutoff, 20 A coordination cutoff, no ATM term
 
 Edit the generated `run.slurm` files when the local configuration differs.
 

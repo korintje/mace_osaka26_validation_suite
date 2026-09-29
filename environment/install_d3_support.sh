@@ -75,8 +75,12 @@ print(f"torch-dftd: {metadata.version('torch-dftd')}")
 print(f"TorchDFTD3Calculator: {TorchDFTD3Calculator.__module__}")
 PYEOF
 
-LAMMPS_HELP="$($LAMMPS_BIN -h 2>&1 || true)"
-if ! grep -q 'dispersion/d3' <<<"$LAMMPS_HELP"; then
+if ! LAMMPS_HELP="$($LAMMPS_BIN -h 2>&1)"; then
+    echo "ERROR: failed to execute $LAMMPS_BIN -h" >&2
+    printf '%s\n' "$LAMMPS_HELP" | sed -n '1,5p' >&2
+    exit 1
+fi
+if [[ "$LAMMPS_HELP" != *"dispersion/d3"* ]]; then
     cat >&2 <<EOF
 ERROR: $LAMMPS_BIN does not provide pair_style dispersion/d3.
 Rebuild or replace LAMMPS (version 4Feb2025 or newer) with the EXTRA-PAIR

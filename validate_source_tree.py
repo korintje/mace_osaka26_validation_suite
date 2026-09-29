@@ -11,6 +11,12 @@ bash = os.environ.get("BASH", "bash")
 for path in shell_files:
     if b"\r\n" in path.read_bytes():
         raise RuntimeError(f"CRLF line endings found in shell script: {path}")
+    text = path.read_text(encoding="utf-8")
+    if re.search(r"\|\s*grep\s+-q\b", text):
+        raise RuntimeError(
+            f"pipe into grep -q found in {path}; with pipefail this can "
+            "misreport an upstream SIGPIPE as failure"
+        )
     subprocess.run([bash, "-n", str(path)], check=True)
 
 for path in shell_files:

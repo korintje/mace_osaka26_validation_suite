@@ -67,22 +67,41 @@ run_path = test_dir / "run.sh"
 run_text = run_path.read_text()
 marker = 'cd "$(dirname "$(readlink -f "$0")")"\n'
 preflight = '''
-if ! lmp -h 2>&1 | grep -q 'dispersion/d3'; then
+LAMMPS_BIN="${LAMMPS_BIN:-/apps/envs/lammps-mace-current/bin/lmp}"
+if [[ ! -x "$LAMMPS_BIN" ]]; then
+    echo "ERROR: LAMMPS executable is missing or not executable: $LAMMPS_BIN" >&2
+    exit 1
+fi
+if ! LAMMPS_HELP="$($LAMMPS_BIN -h 2>&1)"; then
+    echo "ERROR: failed to execute $LAMMPS_BIN -h" >&2
+    printf '%s\n' "$LAMMPS_HELP" | sed -n '1,5p' >&2
+    exit 1
+fi
+if [[ "$LAMMPS_HELP" != *"dispersion/d3"* ]]; then
     echo "ERROR: LAMMPS lacks dispersion/d3 (EXTRA-PAIR package)" >&2
+    echo "LAMMPS_BIN=$LAMMPS_BIN" >&2
+    printf '%s\n' "$LAMMPS_HELP" | sed -n '1,5p' >&2
     exit 1
 fi
 '''
 if marker not in run_text:
     raise RuntimeError("Could not locate run.sh insertion point")
-run_path.write_text(run_text.replace(marker, marker + preflight, 1))
+run_text = run_text.replace(marker, marker + preflight, 1)
+run_text = run_text.replace("lmp -", '"$LAMMPS_BIN" -')
+run_path.write_text(run_text)
 
 slurm_path = test_dir / "run.slurm"
-slurm_path.write_text(
-    slurm_path.read_text().replace(
+slurm_text = slurm_path.read_text().replace(
         "#SBATCH --job-name=osaka26-zno-2nonanone-md",
         "#SBATCH --job-name=osaka26-zno-2nonanone-d3-md",
     )
+slurm_text = slurm_text.replace(
+    "conda activate /apps/envs/lammps-mace-current\n",
+    "conda activate /apps/envs/lammps-mace-current\n"
+    "export LAMMPS_BIN=/apps/envs/lammps-mace-current/bin/lmp\n"
+    "echo \"LAMMPS executable: $(readlink -f \"$LAMMPS_BIN\")\"\n"
 )
+slurm_path.write_text(slurm_text)
 
 analysis_path = test_dir / "analyze_conformations.py"
 analysis_path.write_text(

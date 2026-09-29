@@ -218,21 +218,34 @@ cat > run.sh <<'SHEOF'
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")"
+LAMMPS_BIN="${LAMMPS_BIN:-/apps/envs/lammps-mace-current/bin/lmp}"
+
+if [[ ! -x "$LAMMPS_BIN" ]]; then
+    echo "ERROR: LAMMPS executable is missing or not executable: $LAMMPS_BIN" >&2
+    exit 1
+fi
 
 python - <<'PYEOF'
 import importlib.util
 if importlib.util.find_spec("torch_dftd") is None:
     raise SystemExit("ERROR: torch_dftd is missing; run environment/install_d3_support.sh")
 PYEOF
-if ! lmp -h 2>&1 | grep -q 'dispersion/d3'; then
+if ! LAMMPS_HELP="$($LAMMPS_BIN -h 2>&1)"; then
+    echo "ERROR: failed to execute $LAMMPS_BIN -h" >&2
+    printf '%s\n' "$LAMMPS_HELP" | sed -n '1,5p' >&2
+    exit 1
+fi
+if [[ "$LAMMPS_HELP" != *"dispersion/d3"* ]]; then
     echo "ERROR: LAMMPS lacks dispersion/d3 (EXTRA-PAIR package)" >&2
+    echo "LAMMPS_BIN=$LAMMPS_BIN" >&2
+    printf '%s\n' "$LAMMPS_HELP" | sed -n '1,5p' >&2
     exit 1
 fi
 
 rm -f log.lammps lammps_d3_energy.txt lammps_d3_forces.dump lammps_total_energy.txt lammps_total_forces.dump ase_results.npz comparison_summary.txt
 python generate_system.py
-lmp -in in.d3_only | tee lammps_d3.out
-lmp -k on g 1 -sf kk -pk kokkos newton on neigh half -in in.mace_d3 | tee lammps_mace_d3.out
+"$LAMMPS_BIN" -in in.d3_only | tee lammps_d3.out
+"$LAMMPS_BIN" -k on g 1 -sf kk -pk kokkos newton on neigh half -in in.mace_d3 | tee lammps_mace_d3.out
 python ase_singlepoint.py | tee ase.out
 python compare_results.py | tee comparison.out
 SHEOF
@@ -252,6 +265,8 @@ set -euo pipefail
 cd "$SLURM_SUBMIT_DIR"
 source "$HOME/miniforge3/etc/profile.d/conda.sh"
 conda activate /apps/envs/lammps-mace-current
+export LAMMPS_BIN=/apps/envs/lammps-mace-current/bin/lmp
+echo "LAMMPS executable: $(readlink -f "$LAMMPS_BIN")"
 ./run.sh
 SLEOF
 chmod +x run.slurm

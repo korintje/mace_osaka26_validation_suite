@@ -5,9 +5,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SUITE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 WORK_ROOT="${1:-$SUITE_DIR/work}"
 SOURCE_DIR="$WORK_ROOT/09_2nonanone_md_300K"
-TEST_DIR="$WORK_ROOT/11_2nonanone_d3_md_300K"
+TEST_DIR="$WORK_ROOT/13_2nonanone_d3_md_300K"
 
-# Test 11 is deliberately derived from Test 09 so that the potential is the
+# Test 13 is deliberately derived from Test 09 so that the potential is the
 # only scientific variable. Regenerate Test 09 first to avoid stale inputs.
 "$SCRIPT_DIR/generate_09_2nonanone_md_300K.sh" "$WORK_ROOT"
 mkdir -p "$TEST_DIR"
@@ -123,7 +123,7 @@ analysis_path.write_text(
 PYEOF
 
 cat > "$TEST_DIR/README.md" <<'EOF'
-# Test 11: PBE-D3(BJ) 300 K MD of 2-nonanone on ZnO (10-10)
+# Test 13: PBE-D3(BJ) 300 K MD of 2-nonanone on ZnO (10-10)
 
 This is the dispersion-corrected counterpart of Test 09. It uses the identical
 4 x 4 ZnO slab, initial 2-nonanone geometry, fixed atoms, two-stage relaxation,
@@ -138,9 +138,9 @@ ATM three-body term = disabled
 neighbor capacity = 20000 neighbors/atom, 200000 entries/page
 ```
 
-LAMMPS applies the correction with `pair_style hybrid/overlay`. Test 10 must pass
+LAMMPS applies the correction with `pair_style hybrid/overlay`. Test 12 must pass
 before this production-scale test is interpreted. Direct comparison of Test 09
-and Test 11 isolates the effect of the D3 correction on adsorption stability,
+and Test 13 isolates the effect of the D3 correction on adsorption stability,
 carbonyl tilt, molecular radius of gyration, end-to-end distance, and backbone
 dihedral populations.
 

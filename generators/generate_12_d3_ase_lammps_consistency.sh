@@ -12,7 +12,7 @@ for file in "$ORIGINAL_MODEL" "$MLIAP_MODEL"; do
     [[ -f "$file" ]] || { echo "ERROR: missing model: $file" >&2; exit 1; }
 done
 
-TEST_DIR="$WORK_ROOT/10_d3_ase_lammps_consistency"
+TEST_DIR="$WORK_ROOT/12_d3_ase_lammps_consistency"
 mkdir -p "$TEST_DIR"
 cd "$TEST_DIR"
 ln -sfn "$ORIGINAL_MODEL" mace-osaka26-small.model
@@ -272,7 +272,7 @@ SLEOF
 chmod +x run.slurm
 
 cat > README.md <<'EOF'
-# Test 10: PBE-D3(BJ) ASE-LAMMPS consistency
+# Test 12: PBE-D3(BJ) ASE-LAMMPS consistency
 
 This test validates the D3 setup required for dispersion-corrected MACE
 calculations. A nonperiodic methane dimer is evaluated in two ways:
